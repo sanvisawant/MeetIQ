@@ -6,6 +6,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+data/*.json
+!data/*.example.json
 .pytest_cache/
 
 # Local guidelines / prompt files

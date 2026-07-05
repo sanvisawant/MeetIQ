@@ -1,0 +1,30 @@
+{
+  "action_items": [
+    {
+      "task": "Review AWS instance 502 status and migration timeline.",
+      "owner": "John Doe",
+      "deadline": "2026-07-10"
+    },
+    {
+      "task": "Push API implementation code today.",
+      "owner": "Jane Smith",
+      "deadline": "Today"
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Postpone database migration final decision to tomorrow morning sync.",
+      "context": "Frontend relies on old schema and cannot adapt immediately without UI break."
+    }
+  ],
+  "risks": [
+    {
+      "risk_description": "Database schema migration will break front-end dashboard UI.",
+      "impacted_component": "Frontend UI / Dashboard"
+    }
+  ],
+  "summary_doc_url": "https://docs.google.com/document/d/MOCK_ID/edit",
+  "draft_email_links": [
+    "https://mail.google.com/mail/u/0/#drafts?compose=MOCK_DRAFT_ID"
+  ]
+}

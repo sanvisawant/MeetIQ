@@ -1,0 +1,9 @@
+{
+  "efficiency_score": 62,
+  "verdict": "Moderately Productive Sync",
+  "reasons": [
+    "Most invitees were active, but session exceeded scheduled time limits by 15 minutes.",
+    "Decisions were made, but next-step assignments lacked clear owners and timelines."
+  ],
+  "recommendation": "Empower meeting owner to strictly enforce schedule limits. Mandate assignees and deadlines for every action item before wrapping up."
+}
