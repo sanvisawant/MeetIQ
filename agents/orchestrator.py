@@ -153,136 +153,25 @@ def run_pipeline():
         
     try:
         raw_transcript = load_raw_transcript()
-        
-        
-        # STEP 1: Scribe Agent execution
-        scribe_agent = get_scribe_agent()
-        scribe_runner = InMemoryRunner(agent=scribe_agent)
-        scribe_runner.auto_create_session = True
-        
         print("Running Scribe Agent...")
-        scribe_message = types.Content(parts=[types.Part.from_text(text=raw_transcript)])
-        scribe_events = list(scribe_runner.run(
-            user_id="user_1", 
-            session_id="session_scribe_run", 
-            new_message=scribe_message
-        ))
+        results = run_analysis_pipeline(raw_transcript)
         
-        clean_transcript = ""
-        for event in scribe_events:
-            if event.error_code:
-                raise RuntimeError(f"Scribe Agent Error: {event.error_message}")
-            if event.message and event.message.parts:
-                clean_transcript = "".join(part.text for part in event.message.parts if part.text)
-                
-        if not clean_transcript:
-            raise RuntimeError("Scribe Agent produced an empty transcript.")
-            
-        print("\n--- Cleaned Structured Transcript ---")
-        print(clean_transcript)
-        print("-"*36 + "\n")
-        
-        # STEP 2: Executive Assistant Agent execution
-        ea_agent = get_exec_assistant_agent()
-        ea_runner = InMemoryRunner(agent=ea_agent)
-        ea_runner.auto_create_session = True
-        
-        print("Running Executive Assistant Agent...")
-        ea_message = types.Content(parts=[types.Part.from_text(text=clean_transcript)])
-        ea_events = list(ea_runner.run(
-            user_id="user_1", 
-            session_id="session_ea_run", 
-            new_message=ea_message
-        ))
-        
-        action_plan_text = ""
-        for event in ea_events:
-            if event.error_code:
-                raise RuntimeError(f"Executive Assistant Agent Error: {event.error_message}")
-            
-            # Log function calls (tool invocations) live to show ADK routing
-            fcs = event.get_function_calls()
-            if fcs:
-                for fc in fcs:
-                    print(f"\n[Tool Call] Agent calling tool '{fc.name}' with args: {fc.args}")
-            
-            # Log function responses (tool execution outputs) live
-            frs = event.get_function_responses()
-            if frs:
-                for fr in frs:
-                    print(f"[Tool Response] Tool '{fr.name}' returned: {fr.response}\n")
-
-            if event.message and event.message.parts:
-                action_plan_text = "".join(part.text for part in event.message.parts if part.text)
-                
-        if not action_plan_text:
-            raise RuntimeError("Executive Assistant Agent produced no output.")
-            
-        # Parse the JSON string directly. Strip potential markdown fences if present.
-        cleaned_json_text = action_plan_text.strip()
-        if cleaned_json_text.startswith("```"):
-            lines = cleaned_json_text.splitlines()
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines[-1].startswith("```"):
-                lines = lines[:-1]
-            cleaned_json_text = "\n".join(lines).strip()
-
-        action_plan_dict = json.loads(cleaned_json_text)
-        write_action_items(action_plan_dict)
-        
-        # STEP 3: Efficiency Auditor Agent execution
-        auditor_agent = get_auditor_agent()
-        auditor_runner = InMemoryRunner(agent=auditor_agent)
-        auditor_runner.auto_create_session = True
-        
-        # Formulate metadata from transcript context
-        metadata = {
-            "duration_minutes": 45,
-            "invitees": 10,
-            "active_speakers": 3,
-            "decisions_made": len(action_plan_dict.get("decisions", [])),
-            "agenda_items_completed": 1
+        # Save split results for local file persistence
+        action_plan_dict = {
+            "action_items": results.get("action_items", []),
+            "decisions": results.get("decisions", []),
+            "risks": results.get("risks", []),
+            "summary_doc_url": results.get("summary_doc_url"),
+            "draft_email_links": results.get("draft_email_links", [])
+        }
+        audit_dict = {
+            "efficiency_score": results.get("efficiency_score", 0),
+            "verdict": results.get("verdict", ""),
+            "reasons": results.get("reasons", []),
+            "recommendation": results.get("recommendation", "")
         }
         
-        auditor_prompt = (
-            f"Meeting Metadata:\n"
-            f"- Duration: {metadata['duration_minutes']} minutes\n"
-            f"- Total Invitees: {metadata['invitees']}\n"
-            f"- Active Speakers: {metadata['active_speakers']}\n"
-            f"- Decisions Made: {metadata['decisions_made']}\n"
-            f"- Agenda Items Completed: {metadata['agenda_items_completed']}\n\n"
-            f"Cleaned Transcript:\n{clean_transcript}"
-        )
-        
-        print("Running Efficiency Auditor Agent...")
-        auditor_message = types.Content(parts=[types.Part.from_text(text=auditor_prompt)])
-        auditor_events = list(auditor_runner.run(
-            user_id="user_1", 
-            session_id="session_auditor_run", 
-            new_message=auditor_message
-        ))
-        
-        audit_text = ""
-        for event in auditor_events:
-            if event.error_code:
-                raise RuntimeError(f"Efficiency Auditor Agent Error: {event.error_message}")
-            if event.message and event.message.parts:
-                audit_text = "".join(part.text for part in event.message.parts if part.text)
-                
-        if not audit_text:
-            raise RuntimeError("Efficiency Auditor Agent produced no output.")
-            
-        cleaned_audit_json = audit_text.strip()
-        if cleaned_audit_json.startswith("```"):
-            lines = cleaned_audit_json.splitlines()
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines[-1].startswith("```"):
-                lines = lines[:-1]
-            cleaned_audit_json = "\n".join(lines).strip()
-            
-        audit_dict = json.loads(cleaned_audit_json)
+        write_action_items(action_plan_dict)
         write_audit_results(audit_dict)
         print("Multi-agent pipeline execution completed successfully!")
         
@@ -291,6 +180,144 @@ def run_pipeline():
         print("Generating fallback action items and audit results to keep the application operational...\n")
         write_action_items(MOCK_ACTION_ITEMS)
         write_audit_results(MOCK_AUDIT_RESULTS)
+
+def run_analysis_pipeline(raw_transcript: str) -> dict:
+    """
+    Executes the multi-agent pipeline on the raw_transcript:
+    1. Scribe Agent cleans/structures Hinglish transcript.
+    2. Executive Assistant Agent parses items and updates Google Workspace.
+    3. Efficiency Auditor Agent grades meeting efficiency.
+    
+    Returns a combined dictionary matching the unified React app schema.
+    """
+    # STEP 1: Scribe Agent execution
+    scribe_agent = get_scribe_agent()
+    scribe_runner = InMemoryRunner(agent=scribe_agent)
+    scribe_runner.auto_create_session = True
+    
+    scribe_message = types.Content(parts=[types.Part.from_text(text=raw_transcript)])
+    scribe_events = list(scribe_runner.run(
+        user_id="user_1", 
+        session_id="session_scribe_run", 
+        new_message=scribe_message
+    ))
+    
+    clean_transcript = ""
+    for event in scribe_events:
+        if event.error_code:
+            err_msg = event.error_message if event.error_message else event.error_code
+            raise RuntimeError(f"Scribe Agent Error ({event.error_code}): {err_msg}")
+        if event.message and event.message.parts:
+            clean_transcript = "".join(part.text for part in event.message.parts if part.text)
+            
+    if not clean_transcript:
+        raise RuntimeError("Scribe Agent produced an empty transcript.")
+        
+    # STEP 2: Executive Assistant Agent execution
+    ea_agent = get_exec_assistant_agent()
+    ea_runner = InMemoryRunner(agent=ea_agent)
+    ea_runner.auto_create_session = True
+    
+    ea_message = types.Content(parts=[types.Part.from_text(text=clean_transcript)])
+    ea_events = list(ea_runner.run(
+        user_id="user_1", 
+        session_id="session_ea_run", 
+        new_message=ea_message
+    ))
+    
+    action_plan_text = ""
+    for event in ea_events:
+        if event.error_code:
+            err_msg = event.error_message if event.error_message else event.error_code
+            raise RuntimeError(f"Executive Assistant Agent Error ({event.error_code}): {err_msg}")
+        
+        # Log function calls (tool invocations) live to show ADK routing
+        fcs = event.get_function_calls()
+        if fcs:
+            for fc in fcs:
+                print(f"\n[Tool Call] Agent calling tool '{fc.name}' with args: {fc.args}")
+        
+        # Log function responses (tool execution outputs) live
+        frs = event.get_function_responses()
+        if frs:
+            for fr in frs:
+                print(f"[Tool Response] Tool '{fr.name}' returned: {fr.response}\n")
+
+        if event.message and event.message.parts:
+            action_plan_text = "".join(part.text for part in event.message.parts if part.text)
+            
+    if not action_plan_text:
+        raise RuntimeError("Executive Assistant Agent produced no output.")
+        
+    # Parse the JSON string directly. Strip potential markdown fences if present.
+    cleaned_json_text = action_plan_text.strip()
+    if cleaned_json_text.startswith("```"):
+        lines = cleaned_json_text.splitlines()
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines[-1].startswith("```"):
+            lines = lines[:-1]
+        cleaned_json_text = "\n".join(lines).strip()
+
+    action_plan_dict = json.loads(cleaned_json_text)
+    
+    # STEP 3: Efficiency Auditor Agent execution
+    auditor_agent = get_auditor_agent()
+    auditor_runner = InMemoryRunner(agent=auditor_agent)
+    auditor_runner.auto_create_session = True
+    
+    # Formulate metadata from transcript context
+    metadata = {
+        "duration_minutes": 45,
+        "invitees": 10,
+        "active_speakers": 3,
+        "decisions_made": len(action_plan_dict.get("decisions", [])),
+        "agenda_items_completed": 1
+    }
+    
+    auditor_prompt = (
+        f"Meeting Metadata:\n"
+        f"- Duration: {metadata['duration_minutes']} minutes\n"
+        f"- Total Invitees: {metadata['invitees']}\n"
+        f"- Active Speakers: {metadata['active_speakers']}\n"
+        f"- Decisions Made: {metadata['decisions_made']}\n"
+        f"- Agenda Items Completed: {metadata['agenda_items_completed']}\n\n"
+        f"Cleaned Transcript:\n{clean_transcript}"
+    )
+    
+    auditor_message = types.Content(parts=[types.Part.from_text(text=auditor_prompt)])
+    auditor_events = list(auditor_runner.run(
+        user_id="user_1", 
+        session_id="session_auditor_run", 
+        new_message=auditor_message
+    ))
+    
+    audit_text = ""
+    for event in auditor_events:
+        if event.error_code:
+            err_msg = event.error_message if event.error_message else event.error_code
+            raise RuntimeError(f"Efficiency Auditor Agent Error ({event.error_code}): {err_msg}")
+        if event.message and event.message.parts:
+            audit_text = "".join(part.text for part in event.message.parts if part.text)
+            
+    if not audit_text:
+        raise RuntimeError("Efficiency Auditor Agent produced no output.")
+        
+    cleaned_audit_json = audit_text.strip()
+    if cleaned_audit_json.startswith("```"):
+        lines = cleaned_audit_json.splitlines()
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines[-1].startswith("```"):
+            lines = lines[:-1]
+        cleaned_audit_json = "\n".join(lines).strip()
+        
+    audit_dict = json.loads(cleaned_audit_json)
+    
+    return {
+        **action_plan_dict,
+        **audit_dict
+    }
 
 if __name__ == "__main__":
     run_pipeline()
