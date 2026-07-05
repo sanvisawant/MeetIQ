@@ -1,0 +1,18 @@
+[10:02 AM] Srikant (PM): Okay team, let's kick off. Rahul will join in 10 mins. First agenda item... did everyone do the needful regarding the Friday deployment?
+[10:03 AM] Amit (Backend): Actually Srikant, there's a blocker. The AWS instance is throwing 502s. We need to prepone the database migration to today.
+[10:04 AM] Sanvi (Frontend): Wait, if we migrate today, the Apex dashboard UI is going to break. I've finished the high-fidelity prototype, but it's hardcoded to the old schema. We can't change the role-based access control mechanisms right now just before the demo.
+[10:05 AM] Amit: Ya, but cloud costs are running high. Just mock the data for now.
+[10:05 AM] Sanvi: I can't just mock it if we are showing the live data locks to the client tomorrow.
+[10:06 AM] Srikant: Okay, okay, let's park that. We will take it offline. What about the login API? Aarya, status?
+[10:06 AM] Avni (QA): I am out of station next week for a wedding. So I need Amit to push the code today so I can test before I leave.
+[10:07 AM] Amit: Today my bandwidth is completely choked. I have to look at the Saamya AI integration as well. 
+[10:08 AM] Srikant: Can we get someone else to look at the API? Avanti?
+[10:08 AM] Avanti (Dev): I can look at it, but I don't have access to the repo yet.
+[10:09 AM] Srikant: Okay, just drop an email to IT support. Please revert back to me once you have access.
+[10:12 AM] Rahul (VP): (Joined) Hi guys, joined from my phone in traffic. Listen, regarding the new Saamya AI initiative, management wants to pivot the UI entirely.
+[10:13 AM] Srikant: Sir, this is the weekly sync for the Apex ERP. We are discussing the database.
+[10:13 AM] Rahul: Ah, my bad. Too many back-to-back calls today. Anyway, make sure we optimize the database. Don't let costs shoot up. Okay, I have a hard stop, dropping off. (Left)
+[10:15 AM] Amit: So... what are we doing about the migration?
+[10:16 AM] Srikant: Let's touch base tomorrow morning on this. Amit, just send me an email with the AWS status. Sanvi, just ensure the frontend looks good for now.
+[10:16 AM] Sanvi: But without the API, the dashboard is going to be blank.
+[10:17 AM] Srikant: We will figure it out, just put some placeholder there. Okay, anything else? No? Thanks everyone, giving you 15 minutes back. Let's wrap up.

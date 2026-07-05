@@ -1,0 +1,12 @@
+# API keys and sensitive environment files
+.env
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local guidelines / prompt files
+rules.md

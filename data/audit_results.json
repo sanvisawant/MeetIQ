@@ -1,0 +1,10 @@
+{
+  "efficiency_score": 25,
+  "verdict": "Could have been an email",
+  "reasons": [
+    "High invitee count (10) but low active speaker ratio (3 speakers: Srikant, Amit, Sanvi).",
+    "A 45-minute sync with zero critical decisions finalized (migration parked, API access delayed).",
+    "Meeting devolved into unstructured database schema arguments without resolution."
+  ],
+  "recommendation": "Cap invitees to active stakeholders only. Circulate status updates asynchronously. Take specialized database debates offline to a smaller working group."
+}
