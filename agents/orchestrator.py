@@ -88,9 +88,9 @@ MOCK_ACTION_ITEMS = {
       "impacted_component": "Login API Repo Access"
     }
   ],
-  "summary_doc_url": "https://docs.google.com/document/d/mock_doc_id/edit",
+  "summary_doc_url": "https://docs.google.com/document/d/1_-8R7C0JcLFzqi8RMp6eR3748Yh7E3KiwxxfJbhR26A/edit",
   "draft_email_links": [
-    "https://mail.google.com/mail/u/0/#drafts/mock_draft_id"
+    "https://mail.google.com/mail/u/0/#drafts?compose=r-7355462182201577038"
   ]
 }
 

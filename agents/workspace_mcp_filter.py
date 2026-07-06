@@ -34,6 +34,16 @@ def pipe_stream(src, dest, filter_json=False):
         sys.stderr.flush()
 
 def main():
+    # Set GOOGLE_WORKSPACE_MCP_HOME to project_root/.mcp-credentials for persistent tokens
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    mcp_credentials_dir = os.path.join(project_root, ".mcp-credentials")
+    
+    # Ensure the credentials directory exists locally
+    os.makedirs(mcp_credentials_dir, exist_ok=True)
+    
+    env = os.environ.copy()
+    env["GOOGLE_WORKSPACE_MCP_HOME"] = mcp_credentials_dir
+
     # Use npx to launch the actual Google Workspace MCP server subprocess
     # We specify shell=True on Windows to resolve the npx command path correctly
     proc = subprocess.Popen(
@@ -43,7 +53,8 @@ def main():
         stderr=subprocess.PIPE,
         text=True,
         bufsize=1,
-        shell=True
+        shell=True,
+        env=env
     )
 
     # Spawn threads to handle bi-directional streaming

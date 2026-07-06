@@ -12,3 +12,7 @@ data/*.json
 
 # Local guidelines / prompt files
 rules.md
+
+# Google Workspace MCP credentials cache
+.mcp-credentials/
+.mcp-credentials/*
