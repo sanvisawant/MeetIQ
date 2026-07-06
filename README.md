@@ -47,27 +47,25 @@ Instead of simply summarizing meetings, MeetIQ understands discussions, extracts
 
 It transforms meetings into an execution pipeline.
 
-```
-Meeting Transcript
-        │
-        ▼
-   Scribe Agent
-        │
-        ▼
-Executive Assistant
-        │
-        ▼
-Google Workspace (MCP)
-        │
-        ▼
-Google Docs • Gmail
-        │
-        ▼
-Efficiency Auditor
-        │
-        ▼
-Meeting Dashboard
-```
+<h2>🏗️ Workflow</h2>
+
+<table>
+<tr>
+<td align="center"><b>📥<br>Meeting Transcript</b></td>
+<td align="center">➡️</td>
+<td align="center"><b>📝<br>Scribe Agent</b></td>
+<td align="center">➡️</td>
+<td align="center"><b>📋<br>Executive Assistant</b></td>
+<td align="center">➡️</td>
+<td align="center"><b>☁️<br>Google Workspace MCP</b></td>
+<td align="center">➡️</td>
+<td align="center"><b>📄<br>Google Docs<br>Gmail</b></td>
+<td align="center">➡️</td>
+<td align="center"><b>📊<br>Efficiency Auditor</b></td>
+<td align="center">➡️</td>
+<td align="center"><b>📈<br>Meeting Dashboard</b></td>
+</tr>
+</table>
 
 ---
 
@@ -112,7 +110,8 @@ It is an autonomous meeting operations assistant.
 
 # 🏗️ Architecture
 
-<img width="1774" height="887" alt="image" src="https://github.com/user-attachments/assets/82807c83-6b8e-48ab-8780-94dff7fc4269" />
+<img width="1672" height="941" alt="ChatGPT Image Jul 7, 2026, 02_50_02 AM" src="https://github.com/user-attachments/assets/4ccccf78-e2c6-4736-b40e-4b4ffb77f92f" />
+
 
 
 MeetIQ follows a modular three-agent architecture built using Google's Agent Development Kit (ADK).
@@ -402,15 +401,20 @@ MeetIQ follows secure development practices.
 
 # 📸 Screenshots
 
-| Dashboard | Architecture |
-|-----------|--------------|
-|<img width="1912" height="971" alt="image 2" src="https://github.com/user-attachments/assets/9a1d9168-86bd-4abd-9df3-9149c6c169d8" />
-  | <img width="1774" height="887" alt="image" src="https://github.com/user-attachments/assets/da5512be-4f69-46e9-bfcd-200022f7e488" />|
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c6b2d739-ed74-4899-893a-39eb9702b373" width="48%" alt="Efficiency Report"/>
+  <img src="https://github.com/user-attachments/assets/da5512be-4f69-46e9-bfcd-200022f7e488" width="48%" alt="Architecture"/>
+</p>
 
-| Efficiency Report | 
-|------------------|
-| <img width="1907" height="961" alt="image 1" src="https://github.com/user-attachments/assets/c6b2d739-ed74-4899-893a-39eb9702b373" />| *(Insert Image)* |
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9a1d9168-86bd-4abd-9df3-9149c6c169d8" width="48%" alt="Dashboard"/>
+  <img src="https://github.com/user-attachments/assets/a9868183-01a9-4fea-b47e-69314eca101f" width="48%" alt="Transcript Analysis"/>
+</p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9371d178-e3dc-426b-a8c5-77521c9705c9" width="48%" alt="Google Workspace Integration"/>
+  <img src="https://github.com/user-attachments/assets/7a61acec-6403-47cc-ad8f-4b65c6281320" width="48%" alt="MeetIQ Banner"/>
+</p>
 ---
 
 # 🚧 Future Roadmap
@@ -451,7 +455,5 @@ This project is intended for educational and demonstration purposes.
 ## MeetIQ
 
 ### Transforming conversations into execution.
-
-Built with ❤️ 
 
 </div>
